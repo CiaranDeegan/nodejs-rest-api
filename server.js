@@ -44,6 +44,45 @@ router.route('/bears').post(function(request, response){
 	})
 });
 
+router.route('/bears/:bear_id').get(function(request, response){
+	//GET route (get bear with ID)
+	Bear.findById(request.params.bear_id, function(err, bear){
+		if(err)
+		{
+			response.send(err);
+		}
+		response.json(bear);
+	})
+}).put(function(request, response){
+	//PUT route (update bear name with ID)
+	Bear.findById(request.params.bear_id, function(err, bear){
+		if(err)
+		{
+			response.send(err);
+		}
+		var oldName = bear.name;
+		bear.name = request.body.name;
+		bear.save(function(err){
+			if(err)
+			{
+				response.send(err);
+			}
+			response.json({message: 'Bear named ' +  oldName + ' changed to ' + bear.name})
+		})
+	})
+}).delete(function(request, response){
+	//DELETE route (delete bear with ID)
+	Bear.remove({
+		_id: request.params.bear_id
+	}, function(err){
+		if(err)
+		{
+			response.send(err);
+		}
+		response.json({message: 'Bear deleted.'});
+	});
+});
+
 //Set prefix of all routes
 app.use('/api', router);
 //Start server
